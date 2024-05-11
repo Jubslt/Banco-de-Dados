@@ -1,23 +1,21 @@
 CREATE TABLE livro (
-	isbn varchar (13) PRIMARY KEY,
+	isbn SERIAL PRIMARY KEY,
 	titulo varchar(250),
 	editora varchar(250),
 	ano DATE
 )
 
-
-INSERT INTO livro (isbn, titulo, editora, ano) VALUES
-('9781402894626', 'A Arte da Guerra', 'Editora Estratégia', '2005-08-15'),
-('9780446603591', 'O Senhor dos Anéis', 'Editora da Terra Média', '2001-03-30'),
-('9780064400558', 'Orgulho e Preconceito', 'Editora Clássica', '1813-01-28'),
-('9780385733487', 'O Código Da Vinci', 'Editora Criptex', '2003-04-01'),
-('9780307340718', 'Cem Anos de Solidão', 'Editora Mágica', '1967-05-30'),
-('9780374156424', 'Harry Potter e a Pedra Filosofal', 'Editora das Varinhas', '1997-06-26'),
-('9780545010221', 'O Pequeno Príncipe', 'Editora dos Sonhos', '1943-04-06'),
-('9780316083654', 'Dom Quixote', 'Editora dos Gigantes', '1605-01-16'),
-('9780743231651', 'O Código Bro', 'Editora de Programação', '2004-09-08'),
-('9780143106159', 'O Hobbit', 'Editora das Jornadas', '1937-09-21')
-
+INSERT INTO livro (titulo, editora, ano) VALUES
+('Orgulho e Preconceito', 'Martin Claret', '1813-01-01'),
+('Os lusiadas', 'Editora Concreta', '1572-03-12'),
+('Romeu e Julieta','Companhia das Letras', '1595-11-29'),
+('Memórias Póstumas de Brás Cubas', 'Companhia das Letras', '1881-01-01'),
+('1984', 'Companhia das Letras', '1949-01-01'),
+('O Sítio do Picapau Amarelo','Rio Gráfica Editora', '1947-03-19'),
+('Laços de Família','Editora Francisco Alves','1960-02-21'),
+('Harry Potter e a Pedra Filosofal', 'Rocco', '1997-01-01'),
+('Crepúsculo', 'Little, Brown and Company', '2005-09-27'),
+('verity','Grupo Editorial Record','2018-12-07');
 SELECT * FROM livro
 
 CREATE TABLE autores (
@@ -25,8 +23,8 @@ CREATE TABLE autores (
 	nome_autor varchar(100)
 )
 
-INSERT INTO autores (nome_autor) 
-VALUES
+INSERT INTO autores (nome_autor) VALUES
+
     ('Colleen hoover'),
     ('George Orwell'),
     ('Clarice Lispector'),
@@ -42,10 +40,29 @@ VALUES
 SELECT * FROM autores
 
 CREATE TABLE livros_autores (
-	isbn varchar(15),
-	FOREIGN KEY (isbn) REFERENCES livros (isbn),
-	id_autor int,
+	isbn SERIAL,
+	FOREIGN KEY (isbn) REFERENCES livro (isbn),
+	id_autor SERIAL,
 	FOREIGN KEY (id_autor) REFERENCES autores (id_autor)
 )
 
+DROP TABLE livro
+
 SELECT * FROM livros_autores
+
+-- 1.a) Listar todos os livros e seus autores
+
+SELECT titulo, nome_autor FROM livro INNER JOIN autores
+ON livro.isbn = autores.id_autor
+
+--1.b) encontrar todos os livros de um autor específico
+
+SELECT nome_autor, titulo FROM autores INNER JOIN livro
+ON autores.id_autor = livro.isbn
+WHERE nome_autor = 'Colleen hoover' OR nome_autor = 'colleen hoover'
+
+-- 1.c) Encontrar todos os autores que escreveram um livro específico
+
+SELECT titulo, nome_autor FROM livro INNER JOIN autores
+ON livro.isbn = autores.id_autor
+WHERE titulo = 'Crepúsculo'
