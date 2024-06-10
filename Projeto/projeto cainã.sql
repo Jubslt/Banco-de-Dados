@@ -62,6 +62,7 @@ CREATE TABLE cursos_disciplinas(
 	REFERENCES disciplinas (id_disciplina)
 )
 
+
 DROP TABLE cursos_disciplinas CASCADE
 SELECT * FROM cursos_disciplinas
 
@@ -215,6 +216,9 @@ INSERT INTO cursos_disciplinas (id_disciplina,id_curso)VALUES
 	(4,15),
 	(4,16);
 	
+	
+DROP TABLE cursos_disciplinas CASCADE
+	
 INSERT INTO matriculas_disciplinas (id_disciplina, ra) VALUES
     (1, 27),
     (2, 28),
@@ -237,37 +241,79 @@ SELECT * FROM matriculas_disciplinas
 SELECT * FROM alunos
 WHERE nome = 'Maria Fernanda'
 
+SELECT * FROM (matricula INNER JOIN alunos USING (cpf))
+              INNER JOIN telefones USING (cpf)
+			  INNER JOIN emails USING(cpf)
+WHERE ra='1' or nome='Maria Fernanda'
+
 --2 NOME DO DEPARTAMENTO, TRAZER TODOS OS CURSOS ASSOCIADOS A ELE
 SELECT nome_curso, nome_dpto FROM cursos
 INNER JOIN departamentos ON nome_dpto = 'ENGENHARIA'
 
+SELECT departamentos.nome_dpto, cursos.nome_curso
+FROM departamentos NATURAL INNER JOIN cursos 
+WHERE nome_dpto='SAUDE'
+
+
 --3 NOME DA DISCIPLINA, TRAZER QUAL/QUAIS CURSOS PERTENCEM
 SELECT nome_disciplina FROM disciplinas
 INNER JOIN cursos ON nome_curso = 'Microbiologia'
+
+SELECT * FROM (disciplinas NATURAL INNER JOIN cursos_disciplinas 
+			   NATURAL INNER JOIN cursos)
+WHERE nome_disciplina = 'Programação I'
+
+SELECT * FROM cursos_disciplinas
 
 
 -- 04 COM O CPF, EXIBIR QUAIS CURSOS PERTENCEM
 SELECT cpf, nome_disciplina FROM disciplinas
 INNER JOIN alunos ON cpf = '123456789'
 
+SELECT nome,nome_disciplina FROM ((alunos NATURAL INNER JOIN matricula)
+                     NATURAL INNER JOIN matriculas_disciplinas)
+					 NATURAL INNER JOIN disciplinas
+WHERE cpf='123456789'
 
 --05 FILTRAR TODOS ALUNOS EM UM DETER. CURSO 
 SELECT nome, id_curso FROM alunos 
 INNER JOIN matricula ON id_curso = '10'
 
+SELECT nome FROM (cursos NATURAL INNER JOIN matricula)
+                NATURAL INNER JOIN alunos
+WHERE nome_curso='Medicina'
+
 -- 06 FILTRA MATRICULA EM DISCIPLINA 
 SELECT * FROM matriculas_disciplinas
 WHERE id_disciplina = '13'
 
+SELECT nome FROM ((alunos NATURAL INNER JOIN matricula)
+                  NATURAL INNER JOIN matriculas_disciplinas)
+				  NATURAL INNER JOIN disciplinas
+WHERE nome_disciplina='Medicina'
+
 -- 07 FORMADOS 
 SELECT nome FROM alunos INNER JOIN matricula ON status = 'formado'
+
+SELECT alunos.nome, matricula.status FROM matricula NATURAL INNER JOIN alunos
+WHERE status='formado'
 
 -- 08 ATIVOS 
 SELECT nome FROM alunos INNER JOIN matricula ON status = 'ativo'
 
+SELECT alunos.nome, matricula.status FROM matricula NATURAL INNER JOIN alunos
+WHERE status='ativo'
+
 -- 09 ATIVOS POR CURSO 
 SELECT nome FROM alunos
 INNER JOIN matricula ON status = 'ativo'
+
+SELECT nome_disciplina, COUNT(nome) FROM 
+((alunos NATURAL INNER JOIN matricula)
+ NATURAL INNER JOIN matriculas_disciplinas)
+ NATURAL INNER JOIN disciplinas
+ WHERE status='ativo'
+ GROUP BY nome_disciplina
 
 
 -- 10 ATIVOS POR DISCIPLINA 

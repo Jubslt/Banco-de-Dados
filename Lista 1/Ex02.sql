@@ -47,4 +47,4 @@ CREATE TABLE turma (
 	id_turma SERIAL PRIMARY KEY
 	
 )
-SELECT * FROM turma
+

@@ -59,3 +59,19 @@ INSERT INTO func_proj (id_func, id_projetos) VALUES
 SELECT * FROM funcionarios
 
 SELECT * FROM projetos
+-- 1A
+SELECT funcionarios.nome_func, projetos.nome_projeto
+FROM (projetos NATURAL INNER JOIN func_proj)
+INNER JOIN funcionarios USING (id_func)
+WHERE projetos.nome_projeto = 'DataGuard'
+
+-- B
+SELECT projetos.nome_projeto, funcionarios.nome_func
+FROM (funcionarios NATURAL INNER JOIN func_proj)
+INNER JOIN projetos USING (id_projetos)
+WHERE funcionarios.nome_func = 'Julio'
+
+-- C
+SELECT
+(SELECT COUNT(*) FROM func_proj) / 
+(SELECT COUNT(*) FROM projetos) AS result_divisao;
